@@ -1,0 +1,32 @@
+body{
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
+
+
+
+
+
+.banner{
+    background-image: url(./imgs/directly-shot-laptop-table_1048944-29767236.jpg);
+    padding:  250px 0px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.hello{
+  padding: 70px 0px;
+}
+
+@media (max-width: 526px){
+  .banner{
+    padding: 100px 0;
+  }
+}
+
+
+
