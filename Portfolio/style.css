@@ -12,7 +12,7 @@ body{
 
 
 .banner{
-    background-image: url(/Projects/Final-Project/imgs/directly-shot-laptop-table_1048944-29767236.jpg);
+    background-image: url(./imgs/directly-shot-laptop-table_1048944-29767236.jpg);
     padding:  250px 0px;
     background-size: cover;
     background-repeat: no-repeat;
@@ -20,6 +20,12 @@ body{
 
 .hello{
   padding: 70px 0px;
+}
+
+@media (max-width: 526px){
+  .banner{
+    padding: 100px 0;
+  }
 }
 
 
