@@ -1,170 +1,590 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo Portfolio ❤️</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="./style.css">
+    <title>Yadurshan | Portfolio</title>
+    <link rel="icon" href="icon.png" type="image/x-icon">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Base styles */
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #020617; /* slate-950 */
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Custom Keyframes from the React Component */
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradient 3s ease infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 20s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .animate-shimmer {
+            animation: shimmer 2s infinite;
+        }
+
+        /* Scroll Reveal Base State */
+        .reveal-section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease-out;
+        }
+        .reveal-section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered delays for children */
+        .stagger-1 { transition-delay: 100ms; }
+        .stagger-2 { transition-delay: 200ms; }
+        .stagger-3 { transition-delay: 300ms; }
+        .stagger-4 { transition-delay: 400ms; }
+    </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary py=4 border-bottom text-uppercase sticky-top">
-  <div class="container">
-    <a class="navbar-brand fs-3" href="#">Yadurshan</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-4 fs-6">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#about">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#skills">Skills</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#contact">Contact</a>
-        </li>
-      </ul>     
-    </div>
-  </div>
-</nav>
-  <section CLASS="banner text-center">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="w-75 m-auto">
-            <h1 class="pb-3">HI! MY NAME IS YADURSHAN</h1>
-            <H4 class="pb-4">I am a content creater with 1 year of experience, I have skills on coding, graphic design, AI</H4>
-            <a href="https://wa.me/+94751650851?text=Hi Yadurshan!!!" target="_blank" class="btn btn-dark btn-lg text-uppercase">Connect With Me</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section id="about" class="py-5">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <h4 class="pb-3">About Me</h4>
-          <p>I am a student from Sri Lanka with a growing passion for technology, design, and storytelling. 
-          Currently balancing school commitments with creative projects, I am preparing to begin a Bachelor 
-          of Science in Data Science in 2028. My journey combines technical learning with artistic direction, 
-          as I experiment with HTML/CSS layouts, explore coding fundamentals, and refine emotionally resonant 
-          visual stories that connect with communities.</p>
-          
-          <p>academics, I am actively building a foundation for a sustainable creative business that blends 
-          design, ethical practices, and emotional storytelling. I enjoy crafting narratives that inspire 
-          empathy and resilience, while also learning practical skills that support app development and digital 
-          innovation. My long-term vision is to become a recognized leader in visual storytelling and digital art, 
-          creating work that feels both meaningful and unforgettable.</p>
-        </div>
-        <div class="col-md-6 text-center">
-          <img src="./imgs/mine.png" alt="My image" class="img-fluid w-75 ">
+<body class="relative min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
 
-        </div>
-      </div>
+    <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <div id="customCursor" class="fixed w-8 h-8 pointer-events-none z-50 transition-transform duration-75 ease-out hidden md:block" style="top: 0; left: 0;">
+        <div class="absolute inset-0 border-2 border-purple-400 rounded-full animate-ping opacity-75"></div>
+        <div class="absolute inset-0 border-2 border-pink-500 rounded-full"></div>
     </div>
-  </section>
-  <section id="skills" class="bg-light py-5 ">
-    <div class="container ">
-      <div class="row">
-        <div class="col-md-12">
-          <h4 class="text-center hello">Skills</h4>
+
+    <nav class="fixed top-0 w-full z-40 bg-slate-950/90 backdrop-blur-xl border-b border-purple-500/20 shadow-lg shadow-purple-500/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                    YADURSHAN
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link relative hover:text-purple-400 transition-all duration-300 group">Home
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="#about" class="nav-link relative hover:text-purple-400 transition-all duration-300 group">About
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="#skills" class="nav-link relative hover:text-purple-400 transition-all duration-300 group">Skills
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="#projects" class="nav-link relative hover:text-purple-400 transition-all duration-300 group">Projects
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="#journey" class="nav-link relative hover:text-purple-400 transition-all duration-300 group">Journey
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="#contact" class="nav-link relative hover:text-purple-400 transition-all duration-300 group">Contact
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                </div>
+
+                <button id="mobileMenuBtn" class="md:hidden hover:text-purple-400 transition-colors">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
         </div>
-        <div class="row s">
-          <div class="col-md-3">
-            <div class="card text-center" style="width: 18 rem;">
-              <img src="./imgs/html.png" alt="html" class="card-img-top pt-4 m-auto">
-              <div class="card-body">
-                <h5 class="cardtitle">HTML</h5>
-                <P class="card-text">The skeleton of each and every website including this one also</P>
-                
-              </div>
-            </div>
 
-          </div> 
-          <div class="col-md-3">
-            <div class="card text-center" style="width: 18 rem;">
-              <img src="./imgs/css.png" alt="css" class="card-img-top mt-auto">
-              <div class="card-body">
-                <h5 class="cardtitle">CSS</h5>
-                <P class="card-text">style sheet language used for specifying the presentation and styling of a document</P>
-                
-              </div>
-            </div>
-
-          </div> 
-          <div class="col-md-3">
-            <div class="card text-center" style="width: 18 rem;">
-              <img src="./imgs/js.png" alt="Javascript" class="card-img-top ">
-              <div class="card-body">
-                <h5 class="cardtitle">JS</h5>
-                <P class="card-text">programming language and core technology of the Web</P>
-                
-              </div>
-            </div>
-
-          </div> 
-          <div class="col-md-3">
-            <div class="card text-center" style="width: 18 rem;">
-              <img src="./imgs/j-q.png" alt="J-QUERY" class="card-img-top pt-4 m-auto">
-              <div class="card-body">
-                <h5 class="cardtitle">J-QUERY</h5>
-                <P class="card-text">J-Query is a JavaScript library designed to simplify HTML DOM</P>
-                
-              </div>
-            </div>
-          </div> 
+        <div id="mobileMenu" class="hidden md:hidden bg-slate-900/98 backdrop-blur-xl border-t border-purple-500/20">
+            <a href="#home" class="block px-4 py-4 hover:bg-purple-500/20 transition-all duration-300 border-l-4 border-transparent hover:border-purple-500">Home</a>
+            <a href="#about" class="block px-4 py-4 hover:bg-purple-500/20 transition-all duration-300 border-l-4 border-transparent hover:border-purple-500">About</a>
+            <a href="#skills" class="block px-4 py-4 hover:bg-purple-500/20 transition-all duration-300 border-l-4 border-transparent hover:border-purple-500">Skills</a>
+            <a href="#projects" class="block px-4 py-4 hover:bg-purple-500/20 transition-all duration-300 border-l-4 border-transparent hover:border-purple-500">Projects</a>
+            <a href="#journey" class="block px-4 py-4 hover:bg-purple-500/20 transition-all duration-300 border-l-4 border-transparent hover:border-purple-500">Journey</a>
+            <a href="#contact" class="block px-4 py-4 hover:bg-purple-500/20 transition-all duration-300 border-l-4 border-transparent hover:border-purple-500">Contact</a>
         </div>
-      </div>
+    </nav>
+
+    <section id="home" class="relative min-h-screen flex items-center justify-center pt-16 px-4 overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div id="blob1" class="absolute w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-float" style="top: 20%; left: 10%;"></div>
+            <div id="blob2" class="absolute w-96 h-96 bg-pink-500/30 rounded-full blur-3xl animate-float" style="bottom: 20%; right: 10%; animation-delay: 2s;"></div>
+            <div id="blob3" class="absolute w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl animate-float" style="top: 50%; right: 20%; animation-delay: 1s;"></div>
+        </div>
+
+        <div class="relative z-10 text-center max-w-5xl mx-auto reveal-section active">
+            <div class="relative mb-12 inline-block group">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 rounded-full blur-2xl opacity-60 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
+                <div class="absolute -inset-4 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-full opacity-30 animate-spin-slow"></div>
+                
+<div id="avatar" class="relative w-52 h-52 sm:w-72 sm:h-72 mx-auto rounded-full overflow-hidden border-4 border-purple-500/50 shadow-2xl shadow-purple-500/50 transform transition-all duration-700 group-hover:scale-110 group-hover:rotate-6 flex items-center justify-center">
+    
+    <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-purple-800 animate-gradient"></div>
+    
+    <img 
+        src="1.jpg" 
+        alt="Yadurshan" 
+        class="relative z-10 w-full h-full object-cover transition-all duration-700"
+        onerror="this.parentElement.querySelector('.fallback-yd').style.display='flex'; this.style.display='none';" 
+    />
+
+    <div class="fallback-yd absolute inset-0 hidden items-center justify-center z-0">
+        <div class="text-7xl sm:text-8xl font-bold bg-gradient-to-r from-purple-200 to-pink-200 bg-clip-text text-transparent">
+            YD
+        </div>
     </div>
-  </section>
-  <section id="contact" class='bg-dark text-white'>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <h4 class="text-center hello">Contact</h4>
-        </div>
-      </div>
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Name</label>
-    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Phone number</label>
-    <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-  </div>
-          <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-          </div>
-          <div class="mb-3">
-  <label for="exampleFormControlTextarea1" class="form-label">Subject</label>
-  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
 </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form></div>
-      </div>
-    </div>
-  </section>
-  <footer class="py-3">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <p class="text-center m-0">Copyright: 2025. Designed and Developed by Myself ❤️</p>
+                <div class="absolute top-0 right-0 animate-pulse"><i data-lucide="sparkles" class="w-8 h-8 text-yellow-400"></i></div>
+                <div class="absolute bottom-10 left-0 animate-pulse"><i data-lucide="sparkles" class="w-6 h-6 text-pink-400"></i></div>
+            </div>
+
+            <div class="space-y-6">
+                <h1 class="text-4xl sm:text-6xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-purple-300 via-pink-400 to-purple-300 bg-clip-text text-transparent animate-gradient leading-tight">
+                    HI! MY NAME IS YADURSHAN
+                </h1>
+                
+                <p class="text-xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-400 mb-8 font-semibold animate-pulse">
+                    Developer • Content Creator • AI Enthusiast
+                </p>
+                
+                <p class="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed px-4 backdrop-blur-sm bg-slate-900/30 py-6 rounded-2xl border border-purple-500/20">
+                    A curious learner in the IT field with 1 year of experience, passionate about programming, 
+                    graphic design, and AI. I blend technical skills with artistic vision to create meaningful digital experiences.
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-6 mt-12">
+                    <a href="#contact" class="group relative px-10 py-5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-bold text-lg hover:scale-110 transition-all duration-500 shadow-2xl shadow-purple-500/50 hover:shadow-pink-500/50 overflow-hidden">
+                        <span class="relative z-10">Get In Touch</span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    </a>
+                    <a href="#projects" class="group relative px-10 py-5 border-2 border-purple-500 rounded-full font-bold text-lg hover:bg-purple-500/20 hover:scale-110 transition-all duration-500 shadow-lg hover:shadow-purple-500/50">
+                        <span class="relative z-10">View Work</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <i data-lucide="chevron-down" class="w-10 h-10 text-purple-400"></i>
+            </div>
         </div>
-      </div>
-    </div>
-  </footer>
+    </section>
+
+    <section id="about" class="relative py-32 px-4 bg-slate-950/50">
+        <div class="max-w-6xl mx-auto reveal-section">
+            <h2 class="text-4xl sm:text-6xl font-bold text-center mb-20 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                About Me
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8 text-gray-300 leading-relaxed">
+                    <p class="text-lg bg-slate-900/40 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/20 hover:border-purple-500/50 transition-all duration-500 hover:scale-105">
+                        I am a student from Sri Lanka with a growing passion for technology, design, and storytelling. Currently balancing school commitments with creative projects, I am preparing to begin a Bachelor of Science in Data Science in 2028.
+                    </p>
+                    <p class="text-lg bg-slate-900/40 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/20 hover:border-purple-500/50 transition-all duration-500 hover:scale-105">
+                        My journey combines technical learning with artistic direction, as I experiment with HTML/CSS layouts, explore coding fundamentals, and refine emotionally resonant visual stories that connect with communities.
+                    </p>
+                    <p class="text-lg bg-slate-900/40 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/20 hover:border-purple-500/50 transition-all duration-500 hover:scale-105">
+                        I am actively building a foundation for a sustainable creative business that blends design, ethical practices, and emotional storytelling. My long-term vision is to become a recognized leader in visual storytelling and digital art.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-8 rounded-3xl backdrop-blur-lg border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-110 hover:-rotate-3 text-center group cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-purple-500/50">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center group-hover:scale-125 transition-transform duration-500">
+                            <i data-lucide="award" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">1 Year</div>
+                        <div class="text-sm text-gray-400 group-hover:text-gray-300">Experience</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-8 rounded-3xl backdrop-blur-lg border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-110 hover:-rotate-3 text-center group cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-purple-500/50">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center group-hover:scale-125 transition-transform duration-500">
+                            <i data-lucide="code" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">5+</div>
+                        <div class="text-sm text-gray-400 group-hover:text-gray-300">Technologies</div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-8 rounded-3xl backdrop-blur-lg border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-110 hover:-rotate-3 text-center group cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-purple-500/50">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center group-hover:scale-125 transition-transform duration-500">
+                            <i data-lucide="palette" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">10+</div>
+                        <div class="text-sm text-gray-400 group-hover:text-gray-300">Projects</div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-8 rounded-3xl backdrop-blur-lg border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-110 hover:-rotate-3 text-center group cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-purple-500/50">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center group-hover:scale-125 transition-transform duration-500">
+                            <i data-lucide="brain" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">∞</div>
+                        <div class="text-sm text-gray-400 group-hover:text-gray-300">Learning</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="relative py-32 px-4">
+        <div class="max-w-6xl mx-auto reveal-section">
+            <h2 class="text-4xl sm:text-6xl font-bold text-center mb-20 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                My Skills
+            </h2>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8" id="skillsContainer">
+                <div class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-3xl border border-purple-500/30 hover:border-purple-500 transition-all duration-700 hover:scale-110 hover:rotate-2 group cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-purple-500/50">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
+                            <i data-lucide="code" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold group-hover:text-purple-300 transition-colors">HTML/CSS/JS</h3>
+                    </div>
+                    <div class="relative h-4 bg-slate-800 rounded-full overflow-hidden shadow-inner">
+                        <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full transition-all duration-1000 shadow-lg" style="width: 85%;">
+                            <div class="absolute inset-0 bg-white/20 animate-shimmer"></div>
+                        </div>
+                    </div>
+                    <div class="text-right text-lg font-bold text-purple-400 mt-3">85%</div>
+                </div>
+
+                <div class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-3xl border border-purple-500/30 hover:border-purple-500 transition-all duration-700 hover:scale-110 hover:rotate-2 group cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-purple-500/50">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
+                            <i data-lucide="code" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold group-hover:text-purple-300 transition-colors">Python</h3>
+                    </div>
+                    <div class="relative h-4 bg-slate-800 rounded-full overflow-hidden shadow-inner">
+                        <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-1000 shadow-lg" style="width: 75%;">
+                            <div class="absolute inset-0 bg-white/20 animate-shimmer"></div>
+                        </div>
+                    </div>
+                    <div class="text-right text-lg font-bold text-purple-400 mt-3">75%</div>
+                </div>
+
+                <div class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-3xl border border-purple-500/30 hover:border-purple-500 transition-all duration-700 hover:scale-110 hover:rotate-2 group cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-purple-500/50">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
+                            <i data-lucide="palette" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold group-hover:text-purple-300 transition-colors">Graphic Design</h3>
+                    </div>
+                    <div class="relative h-4 bg-slate-800 rounded-full overflow-hidden shadow-inner">
+                        <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full transition-all duration-1000 shadow-lg" style="width: 90%;">
+                            <div class="absolute inset-0 bg-white/20 animate-shimmer"></div>
+                        </div>
+                    </div>
+                    <div class="text-right text-lg font-bold text-purple-400 mt-3">90%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="relative py-32 px-4 bg-slate-950/50">
+        <div class="max-w-6xl mx-auto reveal-section">
+            <h2 class="text-4xl sm:text-6xl font-bold text-center mb-20 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                Featured Projects
+            </h2>
+
+            <div class="grid sm:grid-cols-2 gap-10">
+                <div class="group relative bg-gradient-to-br from-purple-900/40 to-pink-900/40 p-10 rounded-3xl backdrop-blur-xl border border-purple-500/30 hover:border-purple-500 transition-all duration-700 hover:scale-105 hover:-rotate-2 overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-pink-500/50">
+                    <div class="absolute inset-0 bg-gradient-to-r from-purple-600/0 via-pink-600/20 to-purple-600/0 opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:translate-x-full transform -translate-x-full"></div>
+                    <div class="relative z-10">
+                        <div class="mb-4 w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
+                            <i data-lucide="code" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4 text-white group-hover:text-purple-300 transition-colors duration-300">Interactive Web Design</h3>
+                        <p class="text-gray-400 mb-6 text-lg group-hover:text-gray-300 transition-colors">Modern responsive websites with engaging interfaces</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-2 bg-purple-500/20 rounded-full text-sm font-semibold text-purple-300 border border-purple-500/30">HTML</span>
+                            <span class="px-4 py-2 bg-purple-500/20 rounded-full text-sm font-semibold text-purple-300 border border-purple-500/30">CSS</span>
+                            <span class="px-4 py-2 bg-purple-500/20 rounded-full text-sm font-semibold text-purple-300 border border-purple-500/30">JS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group relative bg-gradient-to-br from-purple-900/40 to-pink-900/40 p-10 rounded-3xl backdrop-blur-xl border border-purple-500/30 hover:border-purple-500 transition-all duration-700 hover:scale-105 hover:-rotate-2 overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-pink-500/50">
+                    <div class="relative z-10">
+                        <div class="mb-4 w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
+                            <i data-lucide="brain" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4 text-white group-hover:text-purple-300">AI-Powered Solutions</h3>
+                        <p class="text-gray-400 mb-6 text-lg group-hover:text-gray-300">Exploring machine learning applications</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-2 bg-purple-500/20 rounded-full text-sm font-semibold text-purple-300 border border-purple-500/30">Python</span>
+                            <span class="px-4 py-2 bg-purple-500/20 rounded-full text-sm font-semibold text-purple-300 border border-purple-500/30">AI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="journey" class="relative py-32 px-4">
+        <div class="max-w-4xl mx-auto reveal-section">
+            <h2 class="text-4xl sm:text-6xl font-bold text-center mb-20 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                My Journey
+            </h2>
+
+            <div class="relative">
+                <div class="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-purple-500"></div>
+                
+                <div class="relative pl-24 pb-16 group transition-all duration-700 reveal-section stagger-1">
+                    <div class="absolute left-4 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full border-4 border-slate-950 group-hover:scale-150 group-hover:rotate-180 transition-all duration-500 shadow-lg shadow-purple-500/50 z-10">
+                        <div class="absolute inset-0 bg-white rounded-full animate-ping opacity-20"></div>
+                    </div>
+                    <div class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-3xl border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-105 hover:rotate-1 shadow-xl hover:shadow-2xl hover:shadow-purple-500/50 cursor-pointer">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="text-purple-400 font-black text-2xl px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/50">2022</div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-purple-300">Learning C++</h3>
+                        <p class="text-gray-400 text-lg">Started my programming journey with C++</p>
+                    </div>
+                </div>
+
+                <div class="relative pl-24 pb-16 group transition-all duration-700 reveal-section stagger-2">
+                    <div class="absolute left-4 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full border-4 border-slate-950 group-hover:scale-150 group-hover:rotate-180 transition-all duration-500 shadow-lg shadow-purple-500/50 z-10"></div>
+                    <div class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-3xl border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-105 hover:rotate-1">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="text-purple-400 font-black text-2xl px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/50">2023</div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Learning Python</h3>
+                        <p class="text-gray-400 text-lg">Expanded into Python and data science</p>
+                    </div>
+                </div>
+
+                <div class="relative pl-24 pb-16 group transition-all duration-700 reveal-section stagger-3">
+                    <div class="absolute left-4 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full border-4 border-slate-950 group-hover:scale-150 group-hover:rotate-180 transition-all duration-500 shadow-lg shadow-purple-500/50 z-10"></div>
+                    <div class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-3xl border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-105 hover:rotate-1">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="text-purple-400 font-black text-2xl px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/50">2024</div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Full Stack & Creation</h3>
+                        <p class="text-gray-400 text-lg">Content Creator & Developer with 1 year of experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="relative py-32 px-4 bg-slate-950/50">
+        <div class="max-w-4xl mx-auto text-center reveal-section">
+            <h2 class="text-4xl sm:text-6xl font-bold mb-8 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                Let's Connect
+            </h2>
+            
+            <p class="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+                I'm always excited to collaborate on creative projects. Let's create something amazing together!
+            </p>
+
+            <div class="flex justify-center gap-6 flex-wrap mb-12">
+                <a href="mailto:your@email.com" class="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-full border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-125 hover:rotate-3 shadow-lg hover:shadow-2xl hover:shadow-purple-500/50">
+                    <i data-lucide="mail" class="w-5 h-5 group-hover:text-purple-400"></i>
+                    <span class="font-semibold">Email</span>
+                </a>
+                <a href="#" class="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-full border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-125 hover:rotate-3 shadow-lg hover:shadow-2xl hover:shadow-purple-500/50">
+                    <i data-lucide="github" class="w-5 h-5 group-hover:text-purple-400"></i>
+                    <span class="font-semibold">GitHub</span>
+                </a>
+                <a href="#" class="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-full border border-purple-500/30 hover:border-purple-500 transition-all duration-500 hover:scale-125 hover:rotate-3 shadow-lg hover:shadow-2xl hover:shadow-purple-500/50">
+                    <i data-lucide="linkedin" class="w-5 h-5 group-hover:text-purple-400"></i>
+                    <span class="font-semibold">LinkedIn</span>
+                </a>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-900/30 to-pink-900/30 p-8 rounded-2xl backdrop-blur-lg border border-purple-500/30 max-w-2xl mx-auto">
+                <form class="space-y-6" onsubmit="event.preventDefault(); alert('Message sent!');">
+                    <input type="text" placeholder="Your Name" class="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500" />
+                    <input type="email" placeholder="Your Email" class="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500" />
+                    <textarea placeholder="Your Message" rows="5" class="w-full px-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"></textarea>
+                    <button type="submit" class="w-full px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/50">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="relative py-8 px-4 border-t border-purple-500/20 bg-slate-950">
+        <div class="max-w-6xl mx-auto text-center text-gray-400">
+            <p class="mb-2">© 2025 Yadurshan. All rights reserved.</p>
+            <p class="text-sm">Crafted with passion • Designed for impact • Built for the future</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // --- 1. Canvas Particle System ---
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Resize Handler
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Particles
+        const particles = [];
+        const particleCount = 120;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.radius = Math.random() * 2.5 + 0.5;
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(168, 85, 247, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update & Draw Particles
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Draw Connections
+            particles.forEach((p1, i) => {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 120) {
+                        ctx.strokeStyle = `rgba(196, 181, 253, ${(1 - dist / 120) * 0.3})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        // --- 2. Custom Cursor ---
+        const cursor = document.getElementById('customCursor');
+        document.addEventListener('mousemove', (e) => {
+            requestAnimationFrame(() => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                cursor.style.transform = 'translate(-50%, -50%)';
+            });
+        });
+
+        // --- 3. Parallax Effects (Hero Blobs) ---
+        const blob1 = document.getElementById('blob1');
+        const blob2 = document.getElementById('blob2');
+        const blob3 = document.getElementById('blob3');
+        const avatar = document.getElementById('avatar');
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            requestAnimationFrame(() => {
+                if (scrollY > window.innerHeight) return; // Optmization
+
+                blob1.style.transform = `translateY(${Math.sin(scrollY * 0.005) * 50}px)`;
+                blob2.style.transform = `translateY(${Math.cos(scrollY * 0.005) * 50}px)`;
+                blob3.style.transform = `translateY(${Math.sin(scrollY * 0.008) * 30}px)`;
+                
+                // Avatar complex transform
+                const scale = 1 + Math.sin(scrollY * 0.01) * 0.05;
+                const rotate = Math.sin(scrollY * 0.005) * 8;
+                const translateY = Math.sin(scrollY * 0.01) * 20;
+                avatar.style.transform = `translateY(${translateY}px) rotateZ(${rotate}deg) scale(${scale})`;
+            });
+        });
+
+        // --- 4. Intersection Observer (Scroll Reveal) ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal-section').forEach(el => observer.observe(el));
+
+        // --- 5. Mobile Menu Toggle ---
+        const btn = document.getElementById('mobileMenuBtn');
+        const menu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
+
+        btn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                menu.classList.remove('hidden');
+                // Replace icon logic manually if needed, or re-render
+                btn.innerHTML = '<i data-lucide="x"></i>';
+                lucide.createIcons();
+            } else {
+                menu.classList.add('hidden');
+                btn.innerHTML = '<i data-lucide="menu"></i>';
+                lucide.createIcons();
+            }
+        });
+
+        // Close menu on link click
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                isMenuOpen = false;
+                menu.classList.add('hidden');
+                btn.innerHTML = '<i data-lucide="menu"></i>';
+                lucide.createIcons();
+            });
+        });
+
+    </script>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </html>
